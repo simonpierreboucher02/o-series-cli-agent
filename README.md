@@ -1,177 +1,147 @@
-# 🧠 Unified OpenAI o Series Agent System  
+# 🧠 Unified OpenAI O-Series CLI Agent  
 
 **👨‍💻 Author: Simon-Pierre Boucher**  
 
 <div align="center">  
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)  
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)  
 ![OpenAI](https://img.shields.io/badge/OpenAI-API-green?logo=openai&logoColor=white)  
 ![License](https://img.shields.io/badge/License-MIT-yellow)  
-![Version](https://img.shields.io/badge/Version-2.0.0-purple)  
+![Version](https://img.shields.io/badge/Version-1.0.0-purple)  
 
-**A professional, feature-rich command-line interface for OpenAI's reasoning models**  
+**A professional, feature-rich CLI agent for OpenAI’s O-Series reasoning models**  
+*Supports O1, O3, O3-mini, and O4-mini with presets, advanced config, and modern CLI*  
 
-*Supporting O1, O3, O3-mini, and O4-mini with advanced conversation management*  
-
-[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Usage](#-usage) • [Documentation](#-documentation)  
+[✨ Features](#-features) • [⚙️ Installation](#-installation) • [🚀 Quick Start](#-quick-start) • [📚 Commands](#-commands-reference) • [📁 File Inclusion](#-file-inclusion) • [🎨 Presets](#-configuration-presets) • [📊 Model Specs](#-model-specs) • [🏗️ Architecture](#-project-structure) • [🔒 Security](#-security-features) • [🐛 Troubleshooting](#-troubleshooting) • [📄 License](#-license) • [🤝 Contributing](#-contributing)  
 
 </div>  
 
 ---
 
-## 🌟 Features  
+## ✨ Features  
 
-### 🤖 Multi-Model Support  
-- 🔹 **O1 Model** → Advanced reasoning (up to 15 min timeout)  
-- 🔹 **O3 Model** → Latest generation (up to 20 min timeout)  
-- 🔹 **O3-mini** → Compact & efficient (up to 10 min timeout)  
-- 🔹 **O4-mini** → Fast & optimized (up to 8 min timeout)  
-
-### 💬 Advanced Chat Interface  
-- 🎨 Beautiful CLI with colors, emojis, responsive design  
-- ⚡ Real-time streaming with progress indicators  
-- 📁 File inclusion using `{filename}` syntax  
-- 🔍 Smart search in conversation history  
-- 📊 Rich statistics & analytics  
-
-### ⚙️ Professional Configuration  
-- 🎯 Presets: Creative, Balanced, Focused, Fast  
-- 🛠️ Interactive setup wizard with validation  
-- 🔧 Fine-grained control over all parameters  
-- 💾 Persistent settings with automatic backup  
-
-### 📤 Multi-Format Export  
-- 📄 **JSON**: Full metadata  
-- 📝 **TXT**: Clean plain text  
-- 📖 **Markdown**: Syntax highlighting  
-- 🌐 **HTML**: Responsive webpage  
-- 📊 **CSV**: Data analysis friendly  
-- 🗂️ **XML**: Structured format  
-
-### 🛡️ Security & Reliability  
-- 🔐 Encrypted API key management  
-- 🚫 Path traversal protection  
-- 🔄 Automatic retries with backoff  
-- 💾 Rolling backups of history  
+- 🔹 **Multi-Model Support**: O1, O3, O3-mini, O4-mini  
+- 🎨 **Beautiful CLI**: Colors, emojis, responsive design  
+- ⚡ **Real-time streaming** with progress indicators  
+- 📁 **File Inclusion**: `{filename}` syntax  
+- 📊 **Rich statistics & analytics**  
+- 🎯 **Presets**: Creative, Balanced, Focused, Fast  
+- ⚙️ **Advanced config** with fine-grained parameters  
+- 📤 **Multi-format Export**: JSON, TXT, Markdown, HTML, CSV, XML  
+- 🛡️ **Secure key management & error handling**  
 
 ---
 
-## 🚀 Installation  
+## ⚙️ Installation  
 
-### Prerequisites  
-- Python 3.8+ (3.10+ recommended)  
-- OpenAI API key with reasoning access  
-
-### Install Dependencies  
+Clone the repository:  
 ```bash
-git clone <repo>
-cd o-series
+git clone https://github.com/simonpierreboucher02/o-series-cli-agent.git
+cd o-series-cli-agent
+```
+
+Create and activate a virtual environment (recommended):  
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+Install dependencies:  
+```bash
 pip install -r requirements.txt
+```
 
-# Optional
-pip install rich click python-dotenv
-```  
-
-### Setup API Key  
-
-**Option 1: Env Variable**  
+Set your OpenAI API key:  
 ```bash
-export OPENAI_API_KEY="your-api-key-here"
-```  
-
-**Option 2: Interactive**  
-```bash
-python main.py --agent-id test --model o1
-```  
-
-**Option 3: Manual Config**  
-`agents/your-agent-id/secrets.json`:  
-```json
-{
-  "provider": "openai",
-  "keys": {
-    "default": "your-api-key-here"
-  }
-}
+export OPENAI_API_KEY=your_api_key_here
 ```  
 
 ---
 
-## ⚡ Quick Start  
+## 🚀 Quick Start  
 
+### Start chat with O1 model  
 ```bash
-# O1 model
-python main.py --agent-id my-first-agent --model o1  
+python main.py --agent-id my-agent --model o1
+```  
 
-# Creative writing
-python main.py --agent-id writer --model o3-mini --preset creative  
+### Creative writing with O3-mini  
+```bash
+python main.py --agent-id writer --model o3-mini --preset creative
+```  
 
-# Fast responses
-python main.py --agent-id quick-chat --model o4-mini --preset fast  
+### Fast responses with O4-mini  
+```bash
+python main.py --agent-id quick --model o4-mini --preset fast
+```  
+
+### List all models and agents  
+```bash
+python main.py --models
+python main.py --list
 ```  
 
 ---
 
-## 📖 Usage  
-
-### Basic Commands  
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `--agent-id` | Specify agent identifier | `--agent-id research` |
-| `--model` | Choose model | `--model o3-mini` |
-| `--list` | Show all agents | `python main.py --list` |
-| `--models` | Show model info | `python main.py --models` |
-| `--export` | Export conversation | `--export html` |  
-
-### Interactive Chat  
+## 📚 Commands Reference  
 
 | Command | Description |
 |---------|-------------|
-| `/help` | Show commands |
+| `/help` | Show all commands |
 | `/history [n]` | Show last n messages |
 | `/search <term>` | Search history |
-| `/stats` | Conversation stats |
-| `/export <format>` | Export conversation |
-| `/preset [name]` | Show/apply presets |
+| `/stats` | Show stats |
+| `/config` | Show current config |
+| `/config edit` | Interactive config |
+| `/preset [name]` | Show/apply preset |
 | `/files` | List files |
+| `/export <format>` | Export (json, txt, md, html, csv, xml) |
+| `/switch <model>` | Switch model |
 | `/quit` | Exit chat |  
 
 ---
 
-## 🎯 Examples  
+## 📁 File Inclusion  
 
-**File Inclusion**  
 ```
-Analyze this code: {script.py}  
-Review my configuration: {config.yaml}  
+Analyze code: {script.py}  
+Review config: {config.yaml}  
 ```  
 
-**Batch Processing**  
-```bash
-python main.py --agent-id batch --batch prompts.txt
-python main.py --agent-id my-agent --export-all
-```  
-
-**Advanced Config**  
-```bash
-python main.py --agent-id creative --model o3 --temperature 1.5 --effort high
-python main.py --agent-id focused --model o4-mini --temperature 0.3 --effort low --no-stream
-```  
+Supported types: Python, JS, TS, Java, C/C++, Go, Rust, HTML, CSS, JSON, YAML, Markdown, etc.  
 
 ---
 
-## 📁 Project Structure  
+## 🎨 Configuration Presets  
+
+- **Creative** 🎨 → High creativity, long reasoning  
+- **Balanced** ⚖️ → Default for most tasks  
+- **Focused** 🎯 → Analytical, technical  
+- **Fast** ⚡ → Quick responses, minimal reasoning  
+
+---
+
+## 📊 Model Specs  
+
+| Model | Timeout (Low/Med/High) | Context | Best Use Case |
+|-------|------------------------|---------|---------------|
+| O1 | 3m / 8m / 15m | 128K | Complex reasoning |
+| O3 | 4m / 10m / 20m | 128K | Advanced tasks |
+| O3-mini | 2m / 5m / 10m | 128K | Balanced performance |
+| O4-mini | 1.5m / 4m / 8m | 128K | Fast/simple tasks |  
+
+---
+
+## 🏗️ Project Structure  
 
 ```
-o-series/
+o-series-cli-agent/
 ├── main.py
 ├── agent.py
 ├── config.py
 ├── export.py
 ├── utils.py
 ├── requirements.txt
-├── README.md
 └── agents/
     └── {agent-id}/
         ├── history.json
@@ -185,84 +155,34 @@ o-series/
 
 ---
 
-## 🎨 Configuration Presets  
+## 🔒 Security Features  
 
-- **Creative** 🎨 → Temp 1.5, High effort, detailed  
-- **Balanced** ⚖️ → Temp 1.0, Medium effort, general use  
-- **Focused** 🎯 → Temp 0.3, High effort, analysis  
-- **Fast** ⚡ → Temp 0.7, Low effort, quick tasks  
-
----
-
-## 🔧 Model Specs  
-
-| Model | Timeout | Context | Best For |
-|-------|---------|---------|----------|
-| O1 | 15 min | 128K | Complex reasoning |
-| O3 | 20 min | 128K | Advanced tasks |
-| O3-mini | 10 min | 128K | Balanced use |
-| O4-mini | 8 min | 128K | Speed tasks |  
-
----
-
-## 📊 Export Formats  
-
-- **JSON** → full metadata & stats  
-- **HTML** → responsive, styled, mobile-friendly  
-- **Markdown** → GitHub-compatible  
-- **CSV** → analysis-ready  
-- **TXT** → clean logs  
-
----
-
-## 🛡️ Security  
-
-- 🔐 Encrypted API key storage  
+- 🔑 Encrypted API key storage  
 - 🚫 Path traversal protection  
 - ✅ Input validation  
+- 📜 Error handling & retries  
 - 📝 Audit logging  
-- 📏 File size limits  
 
 ---
 
-## 🎯 Pro Tips  
+## 🐛 Troubleshooting  
 
-- Use high effort for analysis, low for quick Q&A  
-- Keep included files <2MB  
-- Backup before major config changes  
-- Export in multiple formats for sharing  
+- ❌ Import errors → `pip install -r requirements.txt`  
+- 🔑 API key issues → `export OPENAI_API_KEY=...`  
+- ⏱️ Timeout issues → Adjust reasoning effort  
+- 📂 Permission errors → Ensure directory access  
+
+---
+
+## 📄 License  
+
+MIT License — professional & educational use.  
 
 ---
 
 ## 🤝 Contributing  
 
-1. 🐛 Report bugs  
-2. 💡 Suggest features  
-3. 📝 Improve documentation  
-4. 🔧 Submit code via PR  
-
-Development setup:  
-```bash
-pip install -r requirements.txt
-pip install pytest black flake8 mypy
-pytest
-black *.py
-mypy *.py
-```  
-
----
-
-## 📝 License  
-
-MIT License — see [LICENSE](LICENSE).  
-
----
-
-## 🙏 Acknowledgments  
-
-- OpenAI for reasoning models  
-- Python community for ecosystem  
-- Contributors for improvements  
+Contributions welcome!  
 
 ---
 
