@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 OpenAI O4 Mini Conversation - test4</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #f8fafc;
+            --accent-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --user-bg: #3b82f6;
+            --assistant-bg: #8b5cf6;
+            --code-bg: #f3f4f6;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--assistant-bg) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        .header-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-label {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .stats {
+            background: var(--secondary-color);
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .messages {
+            padding: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, var(--user-bg) 0%, #2563eb 100%);
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, var(--assistant-bg) 0%, #7c3aed 100%);
+        }
+
+        .message-content {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .message-content:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-color: var(--user-bg);
+        }
+
+        .message.assistant .message-content {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border-color: var(--assistant-bg);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .message-role {
+            font-weight: 700;
+            text-transform: capitalize;
+            font-size: 1.1rem;
+        }
+
+        .message-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .message-time {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .message-length {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .message-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.7;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .footer {
+            background: var(--secondary-color);
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-links {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .header {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header-info {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                padding: 1.5rem;
+            }
+
+            .messages {
+                padding: 1rem;
+            }
+
+            .message-content {
+                padding: 1rem;
+            }
+
+            .message-avatar {
+                width: 3rem;
+                height: 3rem;
+                font-size: 1.2rem;
+            }
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(99, 102, 241, 0.3);
+            z-index: 1000;
+        }
+
+        .scroll-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--assistant-bg));
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>🧠 OpenAI O4 Mini Chat Agent</h1>
+                <p class="header-subtitle">Advanced AI Conversation Export</p>
+                <div class="header-info">
+                    <div class="info-card">
+                        <div class="info-label">Agent ID</div>
+                        <div>test4</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Model</div>
+                        <div>o4-mini</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Reasoning Effort</div>
+                        <div>Low</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Exported</div>
+                        <div>2025-08-29 02:43:50</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Temperature</div>
+                        <div>1.0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <h2>📊 Conversation Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Total Messages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">User Messages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Assistant Messages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3,890</div>
+                    <div class="stat-label">Total Characters</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1,945</div>
+                    <div class="stat-label">Avg Message Length</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0:00:13</div>
+                    <div class="stat-label">Duration</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="messages">
+            <div class="message user">
+                <div class="message-avatar">👤</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-role">user</span>
+                        <div class="message-meta">
+                            <span class="message-time">🕒 2025-08-29 02:43:32</span>
+                            <span class="message-length">📝 37 chars</span>
+                        </div>
+                    </div>
+                    <div class="message-text">àgive me a python code for snake game</div>
+                </div>
+            </div>
+            <div class="message assistant">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-role">assistant</span>
+                        <div class="message-meta">
+                            <span class="message-time">🕒 2025-08-29 02:43:45</span>
+                            <span class="message-length">📝 3,853 chars</span>
+                        </div>
+                    </div>
+                    <div class="message-text">Here’s a simple Snake game implementation using Pygame. Save this as, for example, `snake.py`, install Pygame (`pip install pygame`), and run (`python snake.py`).
+
+<div class="code-block">python
+import pygame
+import sys
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+WIDTH, HEIGHT = 640, 480
+CELL_SIZE = 20
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED   = (255, 0, 0)
+GREEN = (0, 255, 0)
+
+# Set up display
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption(&quot;Snake Game&quot;)
+
+# Clock for controlling the frame rate
+clock = pygame.time.Clock()
+FPS = 10
+
+# Font for score
+font = pygame.font.SysFont(&quot;arial&quot;, 24)
+
+def draw_text(surface, text, color, x, y):
+    img = font.render(text, True, color)
+    surface.blit(img, (x, y))
+
+def random_food_position():
+    x = random.randint(0, (WIDTH - CELL_SIZE) // CELL_SIZE) * CELL_SIZE
+    y = random.randint(0, (HEIGHT - CELL_SIZE) // CELL_SIZE) * CELL_SIZE
+    return x, y
+
+def main():
+    # Initial snake: center of screen, length 3
+    snake = [(WIDTH//2, HEIGHT//2),
+             (WIDTH//2 - CELL_SIZE, HEIGHT//2),
+             (WIDTH//2 - 2*CELL_SIZE, HEIGHT//2)]
+    direction = (CELL_SIZE, 0)  # moving right
+
+    # Place first food
+    food = random_food_position()
+    score = 0
+
+    running = True
+    while running:
+        clock.tick(FPS)
+
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                dx, dy = direction
+                if event.key == pygame.K_UP and dy == 0:
+                    direction = (0, -CELL_SIZE)
+                elif event.key == pygame.K_DOWN and dy == 0:
+                    direction = (0, CELL_SIZE)
+                elif event.key == pygame.K_LEFT and dx == 0:
+                    direction = (-CELL_SIZE, 0)
+                elif event.key == pygame.K_RIGHT and dx == 0:
+                    direction = (CELL_SIZE, 0)
+
+        # Move snake
+        head_x, head_y = snake[0]
+        dx, dy = direction
+        new_head = (head_x + dx, head_y + dy)
+        snake.insert(0, new_head)
+
+        # Check for collision with walls
+        if (new_head[0] &lt; 0 or new_head[0] &gt;= WIDTH or
+            new_head[1] &lt; 0 or new_head[1] &gt;= HEIGHT):
+            running = False
+
+        # Check for collision with self
+        if new_head in snake[1:]:
+            running = False
+
+        # Check if food eaten
+        if new_head == food:
+            score += 1
+            food = random_food_position()
+        else:
+            snake.pop()  # remove tail if no food eaten
+
+        # Draw everything
+        screen.fill(BLACK)
+        # draw snake
+        for segment in snake:
+            pygame.draw.rect(screen, GREEN,
+                             (segment[0], segment[1], CELL_SIZE, CELL_SIZE))
+        # draw food
+        pygame.draw.rect(screen, RED,
+                         (food[0], food[1], CELL_SIZE, CELL_SIZE))
+        # draw score
+        draw_text(screen, f&quot;Score: {score}&quot;, WHITE, 10, 10)
+
+        pygame.display.flip()
+
+    # Game over screen
+    screen.fill(BLACK)
+    draw_text(screen, &quot;GAME OVER&quot;, RED, WIDTH//2 - 80, HEIGHT//2 - 24)
+    draw_text(screen, f&quot;Final Score: {score}&quot;, WHITE, WIDTH//2 - 90, HEIGHT//2 + 8)
+    pygame.display.flip()
+    pygame.time.wait(3000)
+
+    pygame.quit()
+    sys.exit()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</div>
+
+How it works:
+
+1. Sets up a grid of cells (`CELL_SIZE` x `CELL_SIZE`).
+2. Maintains a list of snake segments; the head is `snake[0]`.
+3. Moves the snake by inserting a new head based on the current direction.
+4. Checks for wall and self-collisions to end the game.
+5. Spawns food at a random grid-aligned position. Eating grows the snake.
+6. Renders the snake, food, and score each frame and caps the frame rate with `clock.tick(FPS)`.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated by OpenAI O4 Mini Chat Agent</p>
+            <p>Agent ID: <strong>test4</strong> • 2025-08-29 02:43:50</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link" onclick="window.print()">🖨️ Print</a>
+                <a href="#" class="footer-link" onclick="scrollToTop()">⬆️ Top</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Scroll progress indicator
+        window.addEventListener('scroll', function() {
+            const scrollProgress = document.getElementById('scrollProgress');
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollPercentage = (scrollTop / scrollHeight) * 100;
+            scrollProgress.style.width = scrollPercentage + '%';
+        });
+
+        // Smooth scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Add copy functionality to code blocks
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeBlocks = document.querySelectorAll('.code-block');
+            codeBlocks.forEach(function(block) {
+                block.addEventListener('click', function() {
+                    navigator.clipboard.writeText(block.textContent);
+                    // Visual feedback
+                    const originalBg = block.style.backgroundColor;
+                    block.style.backgroundColor = '#10b981';
+                    setTimeout(() => {
+                        block.style.backgroundColor = originalBg;
+                    }, 200);
+                });
+                block.style.cursor = 'pointer';
+                block.title = 'Click to copy';
+            });
+        });
+    </script>
+</body>
+</html>

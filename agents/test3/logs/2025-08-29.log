@@ -1,0 +1,6 @@
+2025-08-29 02:42:17,555 - UnifiedAgent_test3 - INFO - Initialized Unified OpenAI Agent: test3 with model: o3-mini
+2025-08-29 02:42:29,803 - UnifiedAgent_test3 - INFO - Initialized Unified OpenAI Agent: test3 with model: o3-mini
+2025-08-29 02:42:34,929 - UnifiedAgent_test3 - INFO - Making API call to https://api.openai.com/v1/chat/completions
+2025-08-29 02:42:34,930 - UnifiedAgent_test3 - INFO - Using timeout of 120s for O3 Mini with reasoning effort: low
+2025-08-29 02:42:34,930 - UnifiedAgent_test3 - INFO - Making API request to O3 Mini (attempt 1/3) with 120s timeout...
+2025-08-29 02:42:36,486 - UnifiedAgent_test3 - INFO - API request successful

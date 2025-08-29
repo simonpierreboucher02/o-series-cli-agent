@@ -1,0 +1,6 @@
+2025-08-29 02:43:15,258 - UnifiedAgent_test4 - INFO - Initialized Unified OpenAI Agent: test4 with model: o4-mini
+2025-08-29 02:43:26,756 - UnifiedAgent_test4 - INFO - Initialized Unified OpenAI Agent: test4 with model: o4-mini
+2025-08-29 02:43:32,196 - UnifiedAgent_test4 - INFO - Making API call to https://api.openai.com/v1/chat/completions
+2025-08-29 02:43:32,197 - UnifiedAgent_test4 - INFO - Using timeout of 90s for O4 Mini with reasoning effort: low
+2025-08-29 02:43:32,197 - UnifiedAgent_test4 - INFO - Making API request to O4 Mini (attempt 1/3) with 90s timeout...
+2025-08-29 02:43:33,697 - UnifiedAgent_test4 - INFO - API request successful

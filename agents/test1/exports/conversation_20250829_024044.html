@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 OpenAI O1 Conversation - test1</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #f8fafc;
+            --accent-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --user-bg: #3b82f6;
+            --assistant-bg: #8b5cf6;
+            --code-bg: #f3f4f6;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--assistant-bg) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        .header-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-label {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .stats {
+            background: var(--secondary-color);
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .messages {
+            padding: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, var(--user-bg) 0%, #2563eb 100%);
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, var(--assistant-bg) 0%, #7c3aed 100%);
+        }
+
+        .message-content {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .message-content:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-color: var(--user-bg);
+        }
+
+        .message.assistant .message-content {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border-color: var(--assistant-bg);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .message-role {
+            font-weight: 700;
+            text-transform: capitalize;
+            font-size: 1.1rem;
+        }
+
+        .message-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .message-time {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .message-length {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .message-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.7;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .footer {
+            background: var(--secondary-color);
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-links {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .header {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header-info {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                padding: 1.5rem;
+            }
+
+            .messages {
+                padding: 1rem;
+            }
+
+            .message-content {
+                padding: 1rem;
+            }
+
+            .message-avatar {
+                width: 3rem;
+                height: 3rem;
+                font-size: 1.2rem;
+            }
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(99, 102, 241, 0.3);
+            z-index: 1000;
+        }
+
+        .scroll-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--assistant-bg));
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>🧠 OpenAI O1 Chat Agent</h1>
+                <p class="header-subtitle">Advanced AI Conversation Export</p>
+                <div class="header-info">
+                    <div class="info-card">
+                        <div class="info-label">Agent ID</div>
+                        <div>test1</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Model</div>
+                        <div>o1</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Reasoning Effort</div>
+                        <div>Low</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Exported</div>
+                        <div>2025-08-29 02:40:44</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Temperature</div>
+                        <div>1.0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <h2>📊 Conversation Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Total Messages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">User Messages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Assistant Messages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4,176</div>
+                    <div class="stat-label">Total Characters</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2,088</div>
+                    <div class="stat-label">Avg Message Length</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0:00:08</div>
+                    <div class="stat-label">Duration</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="messages">
+            <div class="message user">
+                <div class="message-avatar">👤</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-role">user</span>
+                        <div class="message-meta">
+                            <span class="message-time">🕒 2025-08-29 02:40:27</span>
+                            <span class="message-length">📝 36 chars</span>
+                        </div>
+                    </div>
+                    <div class="message-text">give me a python code for snake game</div>
+                </div>
+            </div>
+            <div class="message assistant">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-role">assistant</span>
+                        <div class="message-meta">
+                            <span class="message-time">🕒 2025-08-29 02:40:35</span>
+                            <span class="message-length">📝 4,140 chars</span>
+                        </div>
+                    </div>
+                    <div class="message-text">Below is a simple Snake game implemented in Python using the Pygame library. Make sure you have Pygame installed (pip install pygame) before running the script. Save this code to a file (for example, snake_game.py) and run it.
+
+--------------------------------------------------------------------------------
+#!/usr/bin/env python3
+
+import pygame
+import sys
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+WIDTH = 600
+HEIGHT = 400
+CELL_SIZE = 20
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (0, 200, 0)
+RED = (200, 0, 0)
+
+# Create screen
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption(&quot;Snake Game&quot;)
+
+# Clock for controlling frame rate
+clock = pygame.time.Clock()
+
+# Font for rendering text
+font = pygame.font.SysFont(None, 36)
+
+def draw_snake(snake_body):
+    &quot;&quot;&quot;Draw the snake based on the list of segments.&quot;&quot;&quot;
+    for segment in snake_body:
+        pygame.draw.rect(screen, GREEN, (segment[0], segment[1], CELL_SIZE, CELL_SIZE))
+
+def generate_food(snake_body):
+    &quot;&quot;&quot;Generate new food coordinates not colliding with the snake.&quot;&quot;&quot;
+    while True:
+        x = random.randint(0, (WIDTH - CELL_SIZE) // CELL_SIZE) * CELL_SIZE
+        y = random.randint(0, (HEIGHT - CELL_SIZE) // CELL_SIZE) * CELL_SIZE
+        if [x, y] not in snake_body:
+            return (x, y)
+
+def game_loop():
+    # Initial snake setup
+    snake_x = WIDTH // 2
+    snake_y = HEIGHT // 2
+    snake_body = [[snake_x, snake_y]]
+    snake_length = 1
+
+    # Initial movement
+    dx = 0
+    dy = 0
+
+    # Generate first food
+    food_x, food_y = generate_food(snake_body)
+
+    while True:
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            elif event.type == pygame.KEYDOWN:
+                # Move the snake with arrow keys or WASD
+                if event.key in (pygame.K_UP, pygame.K_w) and dy == 0:
+                    dx, dy = 0, -CELL_SIZE
+                elif event.key in (pygame.K_DOWN, pygame.K_s) and dy == 0:
+                    dx, dy = 0, CELL_SIZE
+                elif event.key in (pygame.K_LEFT, pygame.K_a) and dx == 0:
+                    dx, dy = -CELL_SIZE, 0
+                elif event.key in (pygame.K_RIGHT, pygame.K_d) and dx == 0:
+                    dx, dy = CELL_SIZE, 0
+
+        # Move snake head
+        snake_x += dx
+        snake_y += dy
+        snake_body.insert(0, [snake_x, snake_y])
+
+        # Check if snake eats food
+        if snake_x == food_x and snake_y == food_y:
+            snake_length += 1
+            food_x, food_y = generate_food(snake_body)
+        else:
+            # If no food eaten, pop the tail
+            snake_body.pop()
+
+        # Check for collision with walls
+        if (snake_x &lt; 0 or snake_x &gt;= WIDTH or
+            snake_y &lt; 0 or snake_y &gt;= HEIGHT):
+            break  # Game over
+
+        # Check for collision with self
+        if [snake_x, snake_y] in snake_body[1:]:
+            break  # Game over
+
+        # Drawing
+        screen.fill(BLACK)
+        draw_snake(snake_body)
+        pygame.draw.rect(screen, RED, (food_x, food_y, CELL_SIZE, CELL_SIZE))
+        pygame.display.update()
+        clock.tick(10)  # Control speed (frames per second)
+
+    # Game over message
+    screen.fill(BLACK)
+    game_over_text = font.render(&quot;Game Over! Press any key to exit.&quot;, True, WHITE)
+    screen.blit(game_over_text, (WIDTH // 2 - 180, HEIGHT // 2 - 20))
+    pygame.display.update()
+
+    # Wait for a key press to exit
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN or event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+def main():
+    game_loop()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+--------------------------------------------------------------------------------
+
+How to run:
+1. Install Pygame if you don’t have it:  
+   pip install pygame
+
+2. Save the code above into a file named, for example, snake_game.py.  
+3. Run the file:  
+   python snake_game.py
+
+Use the arrow keys (↑, ↓, ←, →) or WASD to control the snake. Enjoy!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated by OpenAI O1 Chat Agent</p>
+            <p>Agent ID: <strong>test1</strong> • 2025-08-29 02:40:44</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link" onclick="window.print()">🖨️ Print</a>
+                <a href="#" class="footer-link" onclick="scrollToTop()">⬆️ Top</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Scroll progress indicator
+        window.addEventListener('scroll', function() {
+            const scrollProgress = document.getElementById('scrollProgress');
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollPercentage = (scrollTop / scrollHeight) * 100;
+            scrollProgress.style.width = scrollPercentage + '%';
+        });
+
+        // Smooth scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Add copy functionality to code blocks
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeBlocks = document.querySelectorAll('.code-block');
+            codeBlocks.forEach(function(block) {
+                block.addEventListener('click', function() {
+                    navigator.clipboard.writeText(block.textContent);
+                    // Visual feedback
+                    const originalBg = block.style.backgroundColor;
+                    block.style.backgroundColor = '#10b981';
+                    setTimeout(() => {
+                        block.style.backgroundColor = originalBg;
+                    }, 200);
+                });
+                block.style.cursor = 'pointer';
+                block.title = 'Click to copy';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+created_at: '2025-08-29T02:42:17.556141'
+max_history_size: 1000
+max_output_tokens: null
+model: o3-mini
+parallel_tool_calls: true
+reasoning_effort: low
+reasoning_summary: auto
+store: true
+stream: true
+system_prompt: null
+temperature: 1.0
+text_format: text
+text_verbosity: medium
+tool_choice: auto
+top_p: 1.0
+updated_at: '2025-08-29T02:42:26.030961'

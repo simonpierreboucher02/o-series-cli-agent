@@ -1,0 +1,21 @@
+# Unified OpenAI Agent System - Requirements
+# Production-ready chat interface for OpenAI reasoning models
+
+# Core dependencies
+requests>=2.31.0
+pyyaml>=6.0.1
+colorama>=0.4.6
+
+# Optional dependencies for enhanced features
+rich>=13.7.0          # Enhanced terminal formatting (optional fallback available)
+click>=8.1.7          # Advanced CLI features (optional)
+python-dotenv>=1.0.0  # Environment variable management (optional)
+
+# Development dependencies (optional)
+pytest>=7.4.0         # Testing framework
+black>=23.0.0         # Code formatting  
+flake8>=6.0.0         # Code linting
+mypy>=1.5.0           # Type checking
+
+# System compatibility
+typing-extensions>=4.8.0; python_version<"3.10"  # Type hints for older Python versions
