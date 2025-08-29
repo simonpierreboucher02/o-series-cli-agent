@@ -1,4 +1,4 @@
-# 🧠 Unified OpenAI Agent System
+# 🧠 Unified OpenAI o Series Agent System
 **Author:** Simon-Pierre Boucher
 <div align="center">
 
